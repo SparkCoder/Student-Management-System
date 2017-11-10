@@ -7,10 +7,15 @@ package com.student.diary;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -34,6 +39,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
@@ -114,7 +120,7 @@ public class UIMainController implements Initializable {
         Label label2 = new Label("End Date: ");
         Label label3 = new Label("Subjects:-");
         Label label4 = new Label("Semester number:-");
-        Spinner<Integer> semi = new Spinner<>();
+        Spinner<Integer> semi = new Spinner<>(1, 100, 1);
         DatePicker sd = new DatePicker();
         DatePicker ed = new DatePicker();
         Button cB = new Button("Add Subject");
@@ -177,10 +183,33 @@ public class UIMainController implements Initializable {
             @Override
             public Semester call(ButtonType b) {
                 if (b == buttonTypeOk) {
-                    for (int i = 0; i < items.size(); i++) {
-                        subjects.add(new Subject(items.get(i)));
+                    if (sd.getValue() == null) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Please enter Starting Date");
+                        alert.showAndWait();
+                        createSemester(event);
+                    } else if (ed.getValue() == null) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Please enter End Date");
+                        alert.showAndWait();
+                        createSemester(event);
+                    } else if (items.isEmpty()) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Please create atleast one subject");
+                        alert.showAndWait();
+                        createSemester(event);
+                    } else {
+                        for (int i = 0; i < items.size(); i++) {
+                            subjects.add(new Subject(items.get(i)));
+                        }
+                        return new Semester(new DateF().set(sd.getValue().getDayOfMonth(), sd.getValue().getMonthValue(), sd.getValue().getYear()), new DateF().set(ed.getValue().getDayOfMonth(), ed.getValue().getMonthValue(), ed.getValue().getYear()), subjects, semi.getValue());
                     }
-                    return new Semester(new DateF().set(sd.getValue().getDayOfMonth(), sd.getValue().getMonthValue(), sd.getValue().getYear()), new DateF().set(ed.getValue().getDayOfMonth(), ed.getValue().getMonthValue(), ed.getValue().getYear()), subjects, semi.getValue());
                 }
                 return null;
             }
@@ -226,8 +255,7 @@ public class UIMainController implements Initializable {
         }
 
         list.setItems(items);
-        
-        
+
         dialog.getDialogPane().setContent(list);
 
         // Add button to dialog
@@ -265,7 +293,7 @@ public class UIMainController implements Initializable {
         }
     }
 
-    private Activity generateActivity(TextField nameF, DatePicker sd, Spinner<Integer> sth, Spinner<Integer> stm, DatePicker ed, Spinner<Integer> eth, Spinner<Integer> etm, ComboBox typeA) {
+    private Activity generateActivity(ActionEvent event, TextField nameF, DatePicker sd, Spinner<Integer> sth, Spinner<Integer> stm, DatePicker ed, Spinner<Integer> eth, Spinner<Integer> etm, ComboBox typeA) {
         Activity activity = null;
         GridPane grid = new GridPane();
         ButtonType buttonTypeOk;
@@ -305,7 +333,23 @@ public class UIMainController implements Initializable {
                     @Override
                     public Workshop call(ButtonType b) {
                         if (b == buttonTypeOk) {
-                            return new Workshop(nameF.getText(), new DateF().set(sd.getValue().getDayOfMonth(), sd.getValue().getMonthValue(), sd.getValue().getYear()), new DateF().set(ed.getValue().getDayOfMonth(), ed.getValue().getMonthValue(), ed.getValue().getYear()), new TimeF().set(stm.getValue(), sth.getValue()), new TimeF().set(etm.getValue(), eth.getValue()), topic.getText(), host.getText(), hadPrize.isSelected());
+                            if (topic.getText().isEmpty()) {
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.setTitle("Error");
+                                alert.setHeaderText(null);
+                                alert.setContentText("Please enter Topic");
+                                alert.showAndWait();
+                                generateActivity(event, nameF, sd, sth, stm, ed, eth, etm, typeA);
+                            } else if (host.getText().isEmpty()) {
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.setTitle("Error");
+                                alert.setHeaderText(null);
+                                alert.setContentText("Please enter Host");
+                                alert.showAndWait();
+                                generateActivity(event, nameF, sd, sth, stm, ed, eth, etm, typeA);
+                            } else {
+                                return new Workshop(nameF.getText(), new DateF().set(sd.getValue().getDayOfMonth(), sd.getValue().getMonthValue(), sd.getValue().getYear()), new DateF().set(ed.getValue().getDayOfMonth(), ed.getValue().getMonthValue(), ed.getValue().getYear()), new TimeF().set(stm.getValue(), sth.getValue()), new TimeF().set(etm.getValue(), eth.getValue()), topic.getText(), host.getText(), hadPrize.isSelected());
+                            }
                         }
                         return null;
                     }
@@ -324,7 +368,7 @@ public class UIMainController implements Initializable {
                     Optional<ButtonType> res = alert.showAndWait();
 
                     if (res.get() != ButtonType.OK) {
-                        generateActivity(nameF, sd, sth, stm, ed, eth, etm, typeA);
+                        generateActivity(event, nameF, sd, sth, stm, ed, eth, etm, typeA);
                     }
                 }
                 break;
@@ -363,7 +407,23 @@ public class UIMainController implements Initializable {
                     @Override
                     public Competition call(ButtonType b) {
                         if (b == buttonTypeOk) {
-                            return new Competition(nameF.getText(), new DateF().set(sd.getValue().getDayOfMonth(), sd.getValue().getMonthValue(), sd.getValue().getYear()), new DateF().set(ed.getValue().getDayOfMonth(), ed.getValue().getMonthValue(), ed.getValue().getYear()), new TimeF().set(stm.getValue(), sth.getValue()), new TimeF().set(etm.getValue(), eth.getValue()), topicT.getText(), typeT.getText(), prize.isSelected());
+                            if (topicT.getText().isEmpty()) {
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.setTitle("Error");
+                                alert.setHeaderText(null);
+                                alert.setContentText("Please enter Topic");
+                                alert.showAndWait();
+                                generateActivity(event, nameF, sd, sth, stm, ed, eth, etm, typeA);
+                            } else if (typeT.getText().isEmpty()) {
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.setTitle("Error");
+                                alert.setHeaderText(null);
+                                alert.setContentText("Please enter Type");
+                                alert.showAndWait();
+                                generateActivity(event, nameF, sd, sth, stm, ed, eth, etm, typeA);
+                            } else {
+                                return new Competition(nameF.getText(), new DateF().set(sd.getValue().getDayOfMonth(), sd.getValue().getMonthValue(), sd.getValue().getYear()), new DateF().set(ed.getValue().getDayOfMonth(), ed.getValue().getMonthValue(), ed.getValue().getYear()), new TimeF().set(stm.getValue(), sth.getValue()), new TimeF().set(etm.getValue(), eth.getValue()), topicT.getText(), typeT.getText(), prize.isSelected());
+                            }
                         }
                         return null;
                     }
@@ -382,7 +442,7 @@ public class UIMainController implements Initializable {
                     Optional<ButtonType> res = alert.showAndWait();
 
                     if (res.get() != ButtonType.OK) {
-                        generateActivity(nameF, sd, sth, stm, ed, eth, etm, typeA);
+                        generateActivity(event, nameF, sd, sth, stm, ed, eth, etm, typeA);
                     }
                 }
                 break;
@@ -421,7 +481,23 @@ public class UIMainController implements Initializable {
                     @Override
                     public Other call(ButtonType b) {
                         if (b == buttonTypeOk) {
-                            return new Other(nameF.getText(), new DateF().set(sd.getValue().getDayOfMonth(), sd.getValue().getMonthValue(), sd.getValue().getYear()), new DateF().set(ed.getValue().getDayOfMonth(), ed.getValue().getMonthValue(), ed.getValue().getYear()), new TimeF().set(stm.getValue(), sth.getValue()), new TimeF().set(etm.getValue(), eth.getValue()), topic_T.getText(), type_T.getText(), Prize.isSelected());
+                            if (topic_T.getText().isEmpty()) {
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.setTitle("Error");
+                                alert.setHeaderText(null);
+                                alert.setContentText("Please enter Topic");
+                                alert.showAndWait();
+                                generateActivity(event, nameF, sd, sth, stm, ed, eth, etm, typeA);
+                            } else if (type_T.getText().isEmpty()) {
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.setTitle("Error");
+                                alert.setHeaderText(null);
+                                alert.setContentText("Please enter Type");
+                                alert.showAndWait();
+                                generateActivity(event, nameF, sd, sth, stm, ed, eth, etm, typeA);
+                            } else {
+                                return new Other(nameF.getText(), new DateF().set(sd.getValue().getDayOfMonth(), sd.getValue().getMonthValue(), sd.getValue().getYear()), new DateF().set(ed.getValue().getDayOfMonth(), ed.getValue().getMonthValue(), ed.getValue().getYear()), new TimeF().set(stm.getValue(), sth.getValue()), new TimeF().set(etm.getValue(), eth.getValue()), topic_T.getText(), type_T.getText(), Prize.isSelected());
+                            }
                         }
                         return null;
                     }
@@ -440,7 +516,7 @@ public class UIMainController implements Initializable {
                     Optional<ButtonType> res = alert.showAndWait();
 
                     if (res.get() != ButtonType.OK) {
-                        generateActivity(nameF, sd, sth, stm, ed, eth, etm, typeA);
+                        generateActivity(event, nameF, sd, sth, stm, ed, eth, etm, typeA);
                     }
                 }
                 break;
@@ -519,7 +595,30 @@ public class UIMainController implements Initializable {
             @Override
             public Activity call(ButtonType b) {
                 if (b == buttonTypeOk) {
-                    return generateActivity(nameF, sd, sth, stm, ed, eth, etm, typeA);
+                    if (nameF.getText().isEmpty()) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Please enter Name");
+                        alert.showAndWait();
+                        createActivity(event);
+                    } else if (sd.getValue() == null) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Please enter Starting Date");
+                        alert.showAndWait();
+                        createActivity(event);
+                    } else if (ed.getValue() == null) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Please enter End Date");
+                        alert.showAndWait();
+                        createActivity(event);
+                    } else {
+                        return generateActivity(event, nameF, sd, sth, stm, ed, eth, etm, typeA);
+                    }
                 }
                 return null;
             }
@@ -637,7 +736,15 @@ public class UIMainController implements Initializable {
                         // Traditional way to get the response value.
                         Optional<String> r = d.showAndWait();
                         if (r.isPresent()) {
-                            act.place = Integer.parseInt(r.get());
+                            if (r.get().isEmpty()) {
+                                Alert alert2 = new Alert(Alert.AlertType.ERROR);
+                                alert2.setTitle("Error");
+                                alert2.setHeaderText(null);
+                                alert2.setContentText("Please enter Place");
+                                alert2.showAndWait();
+                            } else {
+                                act.place = Integer.parseInt(r.get());
+                            }
                             editActivities(event);
                         }
                     });
@@ -687,13 +794,15 @@ public class UIMainController implements Initializable {
         list.setPrefWidth(100);
         list.setPrefHeight(70);
 
-        for (int i = 0; i < LogInUser.student.semesters.get(LogInUser.student.currentSemester).subjects.size(); i++) {
-            items.add(LogInUser.student.semesters.get(LogInUser.student.currentSemester).subjects.get(i).name);
+        for (int i = 0; i < LogInUser.student.semesters.get(LogInUser.student.currentSemester - 1).subjects.size(); i++) {
+            items.add(LogInUser.student.semesters.get(LogInUser.student.currentSemester - 1).subjects.get(i).name);
         }
 
+        list.getSelectionModel().select(0);
+
         TextField title = new TextField();
-        Spinner<Integer> min = new Spinner<>();
-        Spinner<Integer> max = new Spinner<>();
+        Spinner<Integer> min = new Spinner<>(0, 10000, 0);
+        Spinner<Integer> max = new Spinner<>(1, 10000, 0);
 
         // Create layout and add to dialog
         GridPane grid = new GridPane();
@@ -720,7 +829,16 @@ public class UIMainController implements Initializable {
             @Override
             public Exam call(ButtonType b) {
                 if (b == buttonTypeOk) {
-                    return new Exam(title.getText(), LogInUser.student.semesters.get(LogInUser.student.currentSemester).findSubject(list.getSelectionModel().getSelectedItem()), min.getValue(), max.getValue());
+                    if (title.getText().isEmpty()) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Please enter Name");
+                        alert.showAndWait();
+                        createExam(event);
+                    } else {
+                        return new Exam(title.getText(), LogInUser.student.semesters.get(LogInUser.student.currentSemester - 1).findSubject(list.getSelectionModel().getSelectedItem()), min.getValue(), max.getValue());
+                    }
                 }
                 return null;
             }
@@ -760,12 +878,12 @@ public class UIMainController implements Initializable {
         list.setPrefWidth(100);
         list.setPrefHeight(70);
 
-        int pos[][] = new int[LogInUser.student.semesters.get(LogInUser.student.currentSemester).subjects.size() * Exam.count][2];
+        int pos[][] = new int[LogInUser.student.semesters.get(LogInUser.student.currentSemester - 1).subjects.size() * Exam.count][2];
 
-        for (int i = 0; i < LogInUser.student.semesters.get(LogInUser.student.currentSemester).subjects.size(); i++) {
-            for (int j = 0; j < LogInUser.student.semesters.get(LogInUser.student.currentSemester).subjects.get(i).exams.size(); j++) {
-                String l = LogInUser.student.semesters.get(LogInUser.student.currentSemester).subjects.get(i).exams.get(j) + " (" + LogInUser.student.semesters.get(LogInUser.student.currentSemester).subjects.get(i) + ")";
-                if (LogInUser.student.semesters.get(LogInUser.student.currentSemester).subjects.get(i).exams.get(j).arrear) {
+        for (int i = 0; i < LogInUser.student.semesters.get(LogInUser.student.currentSemester - 1).subjects.size(); i++) {
+            for (int j = 0; j < LogInUser.student.semesters.get(LogInUser.student.currentSemester - 1).subjects.get(i).exams.size(); j++) {
+                String l = LogInUser.student.semesters.get(LogInUser.student.currentSemester - 1).subjects.get(i).exams.get(j) + " (" + LogInUser.student.semesters.get(LogInUser.student.currentSemester - 1).subjects.get(i) + ")";
+                if (LogInUser.student.semesters.get(LogInUser.student.currentSemester - 1).subjects.get(i).exams.get(j).arrear) {
                     l += " - Arrear";
                 }
                 pos[i * Exam.count + j][0] = i;
@@ -788,7 +906,7 @@ public class UIMainController implements Initializable {
             @Override
             public Exam call(ButtonType b) {
                 if (b == buttonTypeOk) {
-                    return LogInUser.student.semesters.get(LogInUser.student.currentSemester).subjects.get(pos[list.getSelectionModel().getSelectedIndex()][0]).exams.get(pos[list.getSelectionModel().getSelectedIndex()][1]);
+                    return LogInUser.student.semesters.get(LogInUser.student.currentSemester - 1).subjects.get(pos[list.getSelectionModel().getSelectedIndex()][0]).exams.get(pos[list.getSelectionModel().getSelectedIndex()][1]);
                 }
                 return null;
             }
@@ -835,7 +953,6 @@ public class UIMainController implements Initializable {
                         editExam(event);
                     }
                 });
-                grid.add(deleteButton, 1, 1);
 
                 Button prizeButton = new Button("Set Mark");
 
@@ -848,10 +965,21 @@ public class UIMainController implements Initializable {
                     // Traditional way to get the response value.
                     Optional<String> r = d.showAndWait();
                     if (r.isPresent()) {
-                        exam.mark = Integer.parseInt(r.get());
-                        editExam(event);
+                        if (r.get().isEmpty()) {
+                            Alert alert2 = new Alert(Alert.AlertType.ERROR);
+                            alert2.setTitle("Error");
+                            alert2.setHeaderText(null);
+                            alert2.setContentText("Please enter Prize");
+                            alert2.showAndWait();
+                            createActivity(event);
+                        } else {
+                            exam.mark = Integer.parseInt(r.get());
+                            editExam(event);
+                        }
                     }
                 });
+
+                grid.add(deleteButton, 1, 1);
                 grid.add(prizeButton, 1, 2);
 
                 dialog.getDialogPane().setContent(grid);
@@ -891,10 +1019,180 @@ public class UIMainController implements Initializable {
         Label label4 = new Label("Roll no: ");
 
         TextField name = new TextField();
-        TextField dob = new TextField();
+        DatePicker dob = new DatePicker();
+        TextField rollno = new TextField();
         TextField cus = new TextField();
-        Spinner<Integer> min = new Spinner<>();
-        Spinner<Integer> max = new Spinner<>();
+        cus.setEditable(false);
+
+        Button semButton = new Button("View/Set Semesters");
+
+        semButton.setOnAction((ActionEvent event1) -> {
+            selectSemester(event);
+        });
+
+        Button actButton = new Button("View/Edit Activities");
+
+        actButton.setOnAction((ActionEvent event1) -> {
+            editActivities(event);
+        });
+
+        Button passButton = new Button("Change Password");
+
+        passButton.setOnAction((ActionEvent event1) -> {
+            // Custom dialog
+            Dialog<String> dialogp = new Dialog<>();
+            dialogp.setTitle("Set new Password");
+            dialogp.setHeaderText("Please Enter the required fields...");
+            dialogp.setResizable(true);
+
+            // Widgets
+            Label labelp1 = new Label("Old Password  : ");
+            Label labelp2 = new Label("New Password  : ");
+            Label labelp3 = new Label("password again:- ");
+
+            PasswordField oPass = new PasswordField();
+            PasswordField pass1 = new PasswordField();
+            PasswordField pass2 = new PasswordField();
+
+            // Create layout and add to dialog
+            GridPane grid = new GridPane();
+            grid.setAlignment(Pos.CENTER);
+            grid.setHgap(10);
+            grid.setVgap(10);
+            grid.setPadding(new Insets(20, 35, 20, 35));
+            grid.add(labelp1, 1, 1);
+            grid.add(oPass, 2, 1);
+            grid.add(labelp2, 1, 2);
+            grid.add(pass1, 2, 2);
+            grid.add(labelp3, 1, 3);
+            grid.add(pass2, 2, 3);
+            dialogp.getDialogPane().setContent(grid);
+
+            // Add button to dialog
+            ButtonType buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+            dialogp.getDialogPane().getButtonTypes().add(buttonTypeOk);
+
+            // Result converter for dialog
+            dialogp.setResultConverter(new Callback<ButtonType, String>() {
+                @Override
+                public String call(ButtonType b) {
+                    if (b == buttonTypeOk) {
+                        if (oPass.getText().isEmpty()) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Error");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Please enter Old Password");
+                            alert.showAndWait();
+                        } else if (pass1.getText().isEmpty()) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Error");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Please enter New Password");
+                            alert.showAndWait();
+                        } else if (pass2.getText().isEmpty()) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Error");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Please enter New Password again");
+                            alert.showAndWait();
+                        } else if (!oPass.getText().equals(LogInUser.student.credentials.getPassword())) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Error");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Old Password is incorrect");
+                            alert.showAndWait();
+                        } else if (!pass2.getText().equals(pass2.getText())) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Error");
+                            alert.setHeaderText(null);
+                            alert.setContentText("New Password don't match");
+                            alert.showAndWait();
+                        } else {
+                            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                            alert.setTitle("Change Password");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Are you sure you want to change your password?");
+                            Optional<ButtonType> res = alert.showAndWait();
+
+                            if (res.get() == ButtonType.OK) {
+                                LogInUser.student.credentials.setPassword(pass1.getText());
+                                LogInUser.saveAll();
+                            }
+                        }
+                    }
+                    return null;
+                }
+            });
+
+            // Show dialog
+            dialogp.showAndWait();
+        });
+
+        Button deleteButton = new Button("Delete Account");
+
+        deleteButton.setOnAction((ActionEvent event1) -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Delete Your Account");
+            alert.setHeaderText(null);
+            alert.setContentText("Are you sure you want to delete your account?\nThis process is irreversible..!");
+            Optional<ButtonType> res = alert.showAndWait();
+
+            if (res.get() == ButtonType.OK) {
+                try {
+                    LogInUser.delete();
+
+                    Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
+                    alert2.setTitle("Deleted ");
+                    alert2.setHeaderText(null);
+                    alert2.setContentText("User Account " + LogInUser.student.name + " Deleted");
+                    alert2.showAndWait();
+
+                    Parent login_pane = FXMLLoader.load(getClass().getResource("UI_Login.fxml"));
+                    Scene scene = new Scene(login_pane);
+                    Stage appStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                    appStage.setScene(scene);
+                    appStage.show();
+                } catch (IOException ex) {
+                    System.err.println(ex);
+                }
+            }
+        });
+
+        //Set Initial Values
+        name.setText(LogInUser.student.name);
+        dob.setValue(LocalDate.of(LogInUser.student.dateOfBirth.getYear(), LogInUser.student.dateOfBirth.getMonth(), LogInUser.student.dateOfBirth.getDate()));
+        rollno.setText(LogInUser.student.credentials.getRollno());
+        cus.setText(Integer.toString(LogInUser.student.semesters.get(LogInUser.student.currentSemester - 1).sem));
+
+        name.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                LogInUser.changed = true;
+            }
+        });
+
+        dob.valueProperty().addListener(new ChangeListener<LocalDate>() {
+            @Override
+            public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
+                LogInUser.changed = true;
+            }
+        });
+
+        rollno.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                LogInUser.changed = true;
+            }
+        });
+
+        cus.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                LogInUser.changed = true;
+            }
+        });
+
+        LogInUser.changed = false;
 
         // Create layout and add to dialog
         GridPane grid = new GridPane();
@@ -903,13 +1201,17 @@ public class UIMainController implements Initializable {
         grid.setVgap(10);
         grid.setPadding(new Insets(20, 35, 20, 35));
         grid.add(label1, 1, 1);
-        grid.add(title, 2, 1);
+        grid.add(name, 2, 1);
         grid.add(label2, 1, 2);
-        grid.add(list, 1, 3, 2, 1);
-        grid.add(label3, 1, 4);
-        grid.add(min, 2, 4);
-        grid.add(label4, 1, 5);
-        grid.add(max, 2, 5);
+        grid.add(dob, 2, 2);
+        grid.add(label3, 1, 3);
+        grid.add(cus, 2, 3);
+        grid.add(label4, 1, 4);
+        grid.add(rollno, 2, 4);
+        grid.add(semButton, 1, 5);
+        grid.add(actButton, 2, 5);
+        grid.add(passButton, 1, 6);
+        grid.add(deleteButton, 2, 6);
         dialog.getDialogPane().setContent(grid);
 
         // Add button to dialog
@@ -917,36 +1219,44 @@ public class UIMainController implements Initializable {
         dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
 
         // Result converter for dialog
-        dialog.setResultConverter(new Callback<ButtonType, Exam>() {
+        dialog.setResultConverter(new Callback<ButtonType, String>() {
             @Override
-            public Exam call(ButtonType b) {
+            public String call(ButtonType b) {
                 if (b == buttonTypeOk) {
-                    return new Exam(title.getText(), LogInUser.student.semesters.get(LogInUser.student.currentSemester).findSubject(list.getSelectionModel().getSelectedItem()), min.getValue(), max.getValue());
+                    if (LogInUser.changed) {
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                        alert.setTitle("Save Changes");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Is this correct?" + "\nName: " + name.getText() + "\nDate of Birth: " + dob.getValue().toString() + "\nRollno: " + rollno.getText());
+                        Optional<ButtonType> res = alert.showAndWait();
+
+                        if (res.get() == ButtonType.OK) {
+                            if (!rollno.getText().equals(LogInUser.student.credentials.getRollno())) {
+                                LogInUser.saveAll(rollno.getText());
+                            } else {
+
+                                if (!name.getText().equals(LogInUser.student.name)) {
+                                    LogInUser.student.name = name.getText();
+                                }
+                                if ((dob.getValue().getDayOfMonth() != LogInUser.student.dateOfBirth.getDate()) || (dob.getValue().getMonthValue() != LogInUser.student.dateOfBirth.getMonth()) || (dob.getValue().getYear() != LogInUser.student.dateOfBirth.getYear())) {
+                                    LogInUser.student.dateOfBirth.set(dob.getValue().getDayOfMonth(), dob.getValue().getMonthValue(), dob.getValue().getYear());
+                                }
+                                LogInUser.saveAll();
+                            }
+                        } else {
+                            AccSettings(event);
+                        }
+                        LogInUser.changed = false;
+                    }
                 }
                 return null;
             }
         });
 
         // Show dialog
-        Optional<Exam> result = dialog.showAndWait();
-
-        if (result.isPresent()) {
-            exam = result.get();
-
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Created Exam");
-            alert.setHeaderText(null);
-            alert.setContentText("Is this correct?\n" + exam.toString());
-            Optional<ButtonType> res = alert.showAndWait();
-
-            if (res.get() == ButtonType.OK) {
-                exam.subject.exams.add(exam);
-            } else {
-                createExam(event);
-            }
-        }
+        dialog.showAndWait();
     }
-    
+
     @FXML
     private void logOut(ActionEvent event) throws IOException {
         for (int i = 0; i < LogInUser.student.semesters.get(LogInUser.student.currentSemester - 1).subjects.size(); i++) {

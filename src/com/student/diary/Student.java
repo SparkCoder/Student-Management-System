@@ -29,4 +29,9 @@ public class Student implements Serializable {
         this.semesters = semesters;
         this.activities = new ArrayList<>();
     }
+
+    @Override
+    public String toString() {
+        return "Name: " + this.name + "\nDate of Birth: " + this.dateOfBirth.toString() + "\nRollno: " + this.credentials.getRollno();
+    }
 }

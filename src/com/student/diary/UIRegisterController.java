@@ -64,11 +64,13 @@ public class UIRegisterController implements Initializable {
     private TextField pass1;
     @FXML
     private TextField pass2;
+    @FXML
+    private Button selectSemButton;
 
     private Mouse mouse;
     private Student student;
     private ArrayList<Semester> semesters;
-    private int currentSemester;
+    private int currentSemester = -1;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -96,7 +98,6 @@ public class UIRegisterController implements Initializable {
     private void createSemester(ActionEvent event) {
         Semester sem;
         ArrayList<Subject> subjects = new ArrayList<>();
-        subjects.add(new Subject("HH"));
 
         // Custom dialog
         Dialog<Semester> dialog = new Dialog<>();
@@ -109,7 +110,7 @@ public class UIRegisterController implements Initializable {
         Label label2 = new Label("End Date: ");
         Label label3 = new Label("Subjects:-");
         Label label4 = new Label("Semester number:-");
-        Spinner<Integer> semi = new Spinner<>();
+        Spinner<Integer> semi = new Spinner<>(1, 100, 1);
         DatePicker sd = new DatePicker();
         DatePicker ed = new DatePicker();
         Button cB = new Button("Add Subject");
@@ -172,8 +173,31 @@ public class UIRegisterController implements Initializable {
             @Override
             public Semester call(ButtonType b) {
                 if (b == buttonTypeOk) {
-                    for (int i = 0; i < items.size(); i++) {
-                        subjects.add(new Subject(items.get(i)));
+                    if (sd.getValue() == null) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Please enter Starting Date");
+                        alert.showAndWait();
+                        createSemester(event);
+                    } else if (ed.getValue() == null) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Please enter End Date");
+                        alert.showAndWait();
+                        createSemester(event);
+                    } else if (items.isEmpty()) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Please create atleast one subject");
+                        alert.showAndWait();
+                        createSemester(event);
+                    } else {
+                        for (int i = 0; i < items.size(); i++) {
+                            subjects.add(new Subject(items.get(i)));
+                        }
                     }
                     return new Semester(new DateF().set(sd.getValue().getDayOfMonth(), sd.getValue().getMonthValue(), sd.getValue().getYear()), new DateF().set(ed.getValue().getDayOfMonth(), ed.getValue().getMonthValue(), ed.getValue().getYear()), subjects, semi.getValue());
                 }
@@ -252,6 +276,7 @@ public class UIRegisterController implements Initializable {
 
             if (res.get() == ButtonType.OK) {
                 this.currentSemester = this.semesters.indexOf(sem) + 1;
+                this.selectSemButton.setText("Semester: " + this.currentSemester);
             } else {
                 selectSemester(event);
             }
@@ -265,6 +290,18 @@ public class UIRegisterController implements Initializable {
             alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.setContentText("All fields must be filled");
+            alert.showAndWait();
+        } else if (this.semesters.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Please Create atleast one Semester");
+            alert.showAndWait();
+        } else if (currentSemester == -1) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Please Choose a Semester");
             alert.showAndWait();
         } else {
             if (pass1.getText().equals(pass2.getText())) {

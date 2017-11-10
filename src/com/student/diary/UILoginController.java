@@ -73,15 +73,25 @@ public class UILoginController implements Initializable {
 
         Student student;
         if ((student = dbms.find(creds)) != null) {
-            System.out.println("Logged in: " + student.name);
+            if (password.getText().equals(student.credentials.getPassword())) {
+                System.out.println("Logged in: " + student.name);
 
-            LogInUser.student = student;
+                LogInUser.student = student;
 
-            Parent main_pane = FXMLLoader.load(getClass().getResource("UI_Main.fxml"));
-            Scene scene = new Scene(main_pane);
-            Stage appStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            appStage.setScene(scene);
-            appStage.show();
+                Parent main_pane = FXMLLoader.load(getClass().getResource("UI_Main.fxml"));
+                Scene scene = new Scene(main_pane);
+                Stage appStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                appStage.setScene(scene);
+                appStage.show();
+            } else {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Login Failed");
+                alert.setHeaderText(null);
+                alert.setContentText("Wrong Password");
+                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                stage.getIcons().add(new Image(this.getClass().getResource("login.png").toString()));
+                alert.showAndWait();
+            }
         } else {
             System.out.println("User does not exist..!");
 

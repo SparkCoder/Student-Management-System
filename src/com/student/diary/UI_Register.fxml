@@ -77,7 +77,6 @@
                               <TextField fx:id="name" prefHeight="25.0" prefWidth="233.0" />
                            </children>
                         </HBox>
-                        <PasswordField prefHeight="25.0" prefWidth="131.0" />
                         <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="162.0" prefHeight="33.0" prefWidth="606.0">
                            <children>
                               <Label prefHeight="21.0" prefWidth="153.0" text="Password:           " textFill="WHITE">
@@ -105,7 +104,7 @@
                                     <Font name="System Bold" size="13.0" />
                                  </font>
                               </Button>
-                              <Button mnemonicParsing="false" onAction="#selectSemester" style="-fx-background-color: blue;" text="Choose Current Semester" textFill="WHITE">
+                              <Button fx:id="selectSemButton" mnemonicParsing="false" onAction="#selectSemester" style="-fx-background-color: blue;" text="Choose Current Semester" textFill="WHITE">
                                  <font>
                                     <Font name="System Bold" size="13.0" />
                                  </font>

@@ -38,6 +38,7 @@ public class StudentDiary extends Application {
     public static void main(String[] args) {  
         LogInUser.databasePath = "DBase_";
         
+        /*
         ArrayList<Subject> a = new ArrayList<>();
         a.add(new Subject("OOP"));
         a.add(new Subject("DSA"));
@@ -54,6 +55,7 @@ public class StudentDiary extends Application {
         new DatabaseManager(LogInUser.databasePath).save(new Student("Abhishek.D", new DateF().set(31, 01, 1998), new Credentials().setRollno("s").setPassword("s"), 1, s));
         
         System.out.println("H1: " + new DatabaseManager(LogInUser.databasePath).find(new Credentials().setRollno("a").setPassword("a")).name);
+        */
         
         launch(args);
     }

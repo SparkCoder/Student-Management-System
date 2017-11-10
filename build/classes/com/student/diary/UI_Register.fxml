@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -76,14 +77,14 @@
                               <TextField fx:id="name" prefHeight="25.0" prefWidth="233.0" />
                            </children>
                         </HBox>
-                        <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="131.0" prefHeight="33.0" prefWidth="606.0">
+                        <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="162.0" prefHeight="33.0" prefWidth="606.0">
                            <children>
-                              <Label text="Password:           " textFill="WHITE">
+                              <Label prefHeight="21.0" prefWidth="153.0" text="Password:           " textFill="WHITE">
                                  <font>
                                     <Font name="Arial Bold" size="18.0" />
                                  </font>
                               </Label>
-                              <TextField fx:id="pass1" prefHeight="25.0" prefWidth="157.0" />
+                              <PasswordField fx:id="pass1" prefHeight="25.0" prefWidth="159.0" />
                            </children>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="174.0" prefHeight="33.0" prefWidth="606.0">
@@ -93,7 +94,7 @@
                                     <Font name="Arial Bold" size="18.0" />
                                  </font>
                               </Label>
-                              <TextField fx:id="pass2" prefHeight="25.0" prefWidth="156.0" />
+                              <PasswordField fx:id="pass2" prefHeight="25.0" prefWidth="155.0" />
                            </children>
                         </HBox>
                         <HBox alignment="CENTER" layoutX="10.0" layoutY="217.0" prefHeight="29.0" prefWidth="280.0" spacing="13.0">
@@ -103,7 +104,7 @@
                                     <Font name="System Bold" size="13.0" />
                                  </font>
                               </Button>
-                              <Button mnemonicParsing="false" onAction="#selectSemester" style="-fx-background-color: blue;" text="Choose Current Semester" textFill="WHITE">
+                              <Button fx:id="selectSemButton" mnemonicParsing="false" onAction="#selectSemester" style="-fx-background-color: blue;" text="Choose Current Semester" textFill="WHITE">
                                  <font>
                                     <Font name="System Bold" size="13.0" />
                                  </font>
