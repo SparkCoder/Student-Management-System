@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPAn" fx:id="pane" maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" style="-fx-background-color: black; -fx-background-radius: 25; -fx-padding: 10;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.student.diary.UIRegisterController">
+   <children>
+      <VBox alignment="TOP_RIGHT" layoutX="22.0" layoutY="4.0" prefHeight="372.0" prefWidth="606.0" spacing="8.0">
+         <children>
+            <HBox alignment="CENTER_RIGHT" prefHeight="37.0" prefWidth="398.0" spacing="10.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#minimizeFn" prefHeight="13.0" prefWidth="13.0" style="-fx-background-color: #00ff00; -fx-background-radius: 25;" textAlignment="CENTER">
+                     <font>
+                        <Font name="Arial" size="6.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button layoutX="603.0" layoutY="12.0" mnemonicParsing="false" onAction="#exitFn" prefHeight="13.0" prefWidth="13.0" style="-fx-background-color: red; -fx-background-radius: 25;" textAlignment="CENTER">
+                     <font>
+                        <Font name="Arial" size="6.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+               </children>
+            </HBox>
+            <Pane prefHeight="376.0" prefWidth="539.0" style="-fx-border-color: white; -fx-border-radius: 25;">
+               <children>
+                  <Label layoutX="231.0" layoutY="4.0" prefHeight="49.0" prefWidth="158.0" text="Register" textAlignment="CENTER" textFill="WHITE">
+                     <font>
+                        <Font name="Cambria Bold" size="40.0" />
+                     </font>
+                  </Label>
+                  <Separator layoutY="58.0" prefHeight="4.0" prefWidth="606.0" />
+                  <VBox layoutX="149.0" layoutY="75.0" prefHeight="263.0" prefWidth="304.0" spacing="10.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="33.0" prefWidth="606.0">
+                           <children>
+                              <Label text="Date of Birth: " textFill="WHITE">
+                                 <font>
+                                    <Font name="Arial Bold" size="18.0" />
+                                 </font>
+                              </Label>
+                              <DatePicker fx:id="dob" prefHeight="25.0" prefWidth="185.0" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" prefHeight="33.0" prefWidth="606.0">
+                           <children>
+                              <Label text="Roll no: " textFill="WHITE">
+                                 <font>
+                                    <Font name="Arial Bold" size="18.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="rollno" prefHeight="25.0" prefWidth="232.0" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" prefHeight="33.0" prefWidth="606.0">
+                           <children>
+                              <Label text="Name:   " textFill="WHITE">
+                                 <font>
+                                    <Font name="Arial Bold" size="18.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="name" prefHeight="25.0" prefWidth="233.0" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="131.0" prefHeight="33.0" prefWidth="606.0">
+                           <children>
+                              <Label text="Password:           " textFill="WHITE">
+                                 <font>
+                                    <Font name="Arial Bold" size="18.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="pass1" prefHeight="25.0" prefWidth="157.0" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="174.0" prefHeight="33.0" prefWidth="606.0">
+                           <children>
+                              <Label text="Password again: " textFill="WHITE">
+                                 <font>
+                                    <Font name="Arial Bold" size="18.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="pass2" prefHeight="25.0" prefWidth="156.0" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" layoutX="10.0" layoutY="217.0" prefHeight="29.0" prefWidth="280.0" spacing="13.0">
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#createSemester" style="-fx-background-color: orange;" text="Create Semester" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="13.0" />
+                                 </font>
+                              </Button>
+                              <Button mnemonicParsing="false" onAction="#selectSemester" style="-fx-background-color: blue;" text="Choose Current Semester" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="13.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                        </HBox>
+                        <HBox alignment="BOTTOM_CENTER" prefHeight="35.0" prefWidth="304.0" spacing="80.0">
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#register" prefHeight="25.0" prefWidth="64.0" style="-fx-background-color: green;" text="Register" textAlignment="CENTER" textFill="WHITE">
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </Button>
+                              <Button mnemonicParsing="false" onAction="#cancel" prefHeight="25.0" prefWidth="55.0" style="-fx-background-color: red;" text="Cancel" textAlignment="CENTER" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </Button>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </Pane>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
